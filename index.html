@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TaskFlow</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+
+    /* ─────────────────────────────────────────
+       VARIABLES CSS en :root
+       Aquí centralizamos todos los colores,
+       fuentes y espaciados del proyecto.
+       Si quieres cambiar un color, solo lo
+       cambias aquí y se actualiza en toda la app.
+    ───────────────────────────────────────── */
+    :root {
+      --color-bg:       #0f0f0f;
+      --color-surface:  #1a1a1a;
+      --color-border:   #2a2a2a;
+      --color-accent:   #c8f135;
+      --color-accent2:  #ff6b35;
+      --color-text:     #f0f0f0;
+      --color-muted:    #888;
+
+      --font-display: 'Syne', sans-serif;
+      --font-body:    'DM Sans', sans-serif;
+
+      --space-xs: 0.5rem;
+      --space-sm: 1rem;
+      --space-md: 1.5rem;
+      --space-lg: 2.5rem;
+
+      --radius: 12px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: var(--font-body);
+      min-height: 100vh;
+    }
+
+    /* ─────────────────────────────────────────
+       HEADER
+       La barra superior de la app con el logo
+       y navegación.
+    ───────────────────────────────────────── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-sm) var(--space-lg);
+      border-bottom: 1px solid var(--color-border);
+      background: var(--color-surface);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header .logo {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    header .logo span {
+      color: var(--color-accent);
+    }
+
+    header nav {
+      display: flex;
+      gap: var(--space-sm);
+    }
+
+    header nav a {
+      color: var(--color-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+
+    header nav a:hover {
+      color: var(--color-text);
+    }
+
+    /* ─────────────────────────────────────────
+       LAYOUT PRINCIPAL
+       Usamos CSS Grid para dividir la pantalla
+       en dos zonas: aside (barra lateral)
+       y main (contenido principal).
+    ───────────────────────────────────────── */
+    .layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      min-height: calc(100vh - 61px);
+    }
+
+    /* ─────────────────────────────────────────
+       ASIDE (barra lateral)
+       Menú de categorías a la izquierda.
+    ───────────────────────────────────────── */
+    aside {
+      background: var(--color-surface);
+      border-right: 1px solid var(--color-border);
+      padding: var(--space-md);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+
+    aside h2 {
+      font-family: var(--font-display);
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: var(--space-xs);
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.6rem var(--space-sm);
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: var(--color-muted);
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .nav-item:hover {
+      background: var(--color-border);
+      color: var(--color-text);
+    }
+
+    .nav-item.active {
+      background: var(--color-accent);
+      color: #000;
+      font-weight: 500;
+    }
+
+    .nav-item .count {
+      font-size: 0.75rem;
+      background: rgba(255,255,255,0.1);
+      padding: 0.1rem 0.4rem;
+      border-radius: 99px;
+    }
+
+    .nav-item.active .count {
+      background: rgba(0,0,0,0.15);
+    }
+
+    /* ─────────────────────────────────────────
+       MAIN (contenido principal)
+       Aquí van las secciones de tareas.
+    ───────────────────────────────────────── */
+    main {
+      padding: var(--space-lg);
+      overflow-y: auto;
+    }
+
+    main h1 {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: var(--space-md);
+    }
+
+    main h1 span {
+      color: var(--color-accent);
+    }
+
+    /* ─────────────────────────────────────────
+       SECTION
+       Cada sección agrupa tareas por estado.
+    ───────────────────────────────────────── */
+    section {
+      margin-bottom: var(--space-lg);
+    }
+
+    section h2 {
+      font-family: var(--font-display);
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: var(--space-sm);
+      padding-bottom: var(--space-xs);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    /* ─────────────────────────────────────────
+       TARJETAS DE TAREAS con FLEXBOX
+       Usamos display: flex para alinear en una
+       fila el título, categoría y badge de prioridad.
+    ───────────────────────────────────────── */
+    .task-card {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-sm) var(--space-md);
+      margin-bottom: var(--space-xs);
+      cursor: pointer;
+
+      /* BONUS: transición suave al cambiar estado */
+      transition: background 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .task-card:hover {
+      background: #222;
+      border-color: #444;
+      transform: translateX(4px);
+    }
+
+    .task-card.done {
+      opacity: 0.5;
+    }
+
+    .task-card.done .task-title {
+      text-decoration: line-through;
+    }
+
+    .task-check {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid var(--color-border);
+      flex-shrink: 0;
+      transition: background 0.3s, border-color 0.3s;
+    }
+
+    .task-card.done .task-check {
+      background: var(--color-accent);
+      border-color: var(--color-accent);
+    }
+
+    .task-title {
+      flex: 1;
+      font-size: 0.95rem;
+    }
+
+    .task-category {
+      font-size: 0.75rem;
+      color: var(--color-muted);
+      background: var(--color-border);
+      padding: 0.2rem 0.6rem;
+      border-radius: 99px;
+    }
+
+    /* ─────────────────────────────────────────
+       BADGES DE PRIORIDAD
+       Cada tarea tiene un badge que indica
+       si es alta, media o baja prioridad.
+    ───────────────────────────────────────── */
+    .badge {
+      font-size: 0.7rem;
+      font-weight: 500;
+      padding: 0.2rem 0.6rem;
+      border-radius: 99px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .badge.alta   { background: #ff6b3520; color: var(--color-accent2); }
+    .badge.media  { background: #f5c84220; color: #f5c842; }
+    .badge.baja   { background: #c8f13520; color: var(--color-accent); }
+
+    /* ─────────────────────────────────────────
+       MEDIA QUERIES
+       En pantallas pequeñas (móvil), el aside
+       se mueve abajo y ocupa todo el ancho.
+    ───────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .layout {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+      }
+
+      aside {
+        border-right: none;
+        border-bottom: 1px solid var(--color-border);
+        flex-direction: row;
+        flex-wrap: wrap;
+        padding: var(--space-sm);
+      }
+
+      aside h2 {
+        width: 100%;
+      }
+
+      main {
+        padding: var(--space-sm);
+      }
+
+      main h1 {
+        font-size: 1.5rem;
+      }
+
+      .task-category {
+        display: none;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- HEADER: barra superior con logo y navegación -->
+  <header>
+    <div class="logo">Task<span>Flow</span></div>
+    <nav>
+      <a href="#">Dashboard</a>
+      <a href="#">Equipo</a>
+      <a href="#">Ajustes</a>
+    </nav>
+  </header>
+
+  <div class="layout">
+
+    <!-- ASIDE: barra lateral de categorías -->
+    <aside>
+      <h2>Categorías</h2>
+      <div class="nav-item active">📋 Todas <span class="count">8</span></div>
+      <div class="nav-item">💻 Desarrollo <span class="count">3</span></div>
+      <div class="nav-item">🎨 Diseño <span class="count">2</span></div>
+      <div class="nav-item">📊 Análisis <span class="count">2</span></div>
+      <div class="nav-item">📝 Documentación <span class="count">1</span></div>
+    </aside>
+
+    <!-- MAIN: contenido principal con secciones de tareas -->
+    <main>
+      <h1>Mis <span>Tareas</span></h1>
+
+      <!-- SECTION: tareas pendientes -->
+      <section>
+        <h2>⏳ En progreso</h2>
+
+        <div class="task-card">
+          <div class="task-check"></div>
+          <span class="task-title">Diseñar pantalla de login</span>
+          <span class="task-category">Diseño</span>
+          <span class="badge alta">Alta</span>
+        </div>
+
+        <div class="task-card">
+          <div class="task-check"></div>
+          <span class="task-title">Conectar API de usuarios</span>
+          <span class="task-category">Desarrollo</span>
+          <span class="badge alta">Alta</span>
+        </div>
+
+        <div class="task-card">
+          <div class="task-check"></div>
+          <span class="task-title">Revisar métricas de rendimiento</span>
+          <span class="task-category">Análisis</span>
+          <span class="badge media">Media</span>
+        </div>
+      </section>
+
+      <!-- SECTION: tareas pendientes -->
+      <section>
+        <h2>📌 Pendientes</h2>
+
+        <div class="task-card">
+          <div class="task-check"></div>
+          <span class="task-title">Escribir tests unitarios</span>
+          <span class="task-category">Desarrollo</span>
+          <span class="badge media">Media</span>
+        </div>
+
+        <div class="task-card">
+          <div class="task-check"></div>
+          <span class="task-title">Actualizar documentación técnica</span>
+          <span class="task-category">Documentación</span>
+          <span class="badge baja">Baja</span>
+        </div>
+
+        <div class="task-card">
+          <div class="task-check"></div>
+          <span class="task-title">Crear informe mensual</span>
+          <span class="task-category">Análisis</span>
+          <span class="badge baja">Baja</span>
+        </div>
+      </section>
+
+      <!-- SECTION: tareas completadas -->
+      <section>
+        <h2>✅ Completadas</h2>
+
+        <div class="task-card done">
+          <div class="task-check"></div>
+          <span class="task-title">Configurar repositorio en GitHub</span>
+          <span class="task-category">Desarrollo</span>
+          <span class="badge baja">Baja</span>
+        </div>
+
+        <div class="task-card done">
+          <div class="task-check"></div>
+          <span class="task-title">Definir paleta de colores</span>
+          <span class="task-category">Diseño</span>
+          <span class="badge media">Media</span>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+</body>
+</html>
