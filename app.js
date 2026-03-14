@@ -2,98 +2,89 @@
 // app.js - Lógica de TaskFlow
 // ─────────────────────────────────────────
 
-// Seleccionamos los elementos del HTML que vamos a necesitar
-const taskInput  = document.getElementById('task-input');
-const btnAdd     = document.getElementById('btn-add');
-const taskList   = document.getElementById('task-list');
+// Seleccionamos los elementos del HTML
+const taskInput   = document.getElementById('task-input');
+const btnAdd      = document.getElementById('btn-add');
+const taskList    = document.getElementById('task-list');
 const searchInput = document.getElementById('search-input');
+const themeToggle = document.getElementById('theme-toggle');
+const themeIcon   = document.getElementById('theme-icon');
 
 // ─────────────────────────────────────────
-// CARGAR TAREAS GUARDADAS
-// Al abrir la app, leemos lo que haya en
-// LocalStorage. Si no hay nada, usamos
-// un array vacío [].
+// MODO OSCURO / CLARO
+// Al pulsar el botón, añadimos o quitamos
+// la clase "dark" del elemento <html>.
+// Tailwind activa los estilos "dark:..."
+// cuando esa clase está presente.
+// ─────────────────────────────────────────
+themeToggle.addEventListener('click', function() {
+  const html = document.documentElement;
+  html.classList.toggle('dark');
+
+  // Cambiamos el icono según el modo activo
+  if (html.classList.contains('dark')) {
+    themeIcon.textContent = '☀️';
+  } else {
+    themeIcon.textContent = '🌙';
+  }
+});
+
+// ─────────────────────────────────────────
+// CARGAR TAREAS GUARDADAS en LocalStorage
 // ─────────────────────────────────────────
 let tasks = JSON.parse(localStorage.getItem('taskflow-tasks')) || [];
 
-// Pintamos las tareas guardadas nada más cargar la página
 renderTasks();
 
 // ─────────────────────────────────────────
 // AÑADIR TAREA
-// Escuchamos el clic en el botón "+ Añadir"
-// con addEventListener.
 // ─────────────────────────────────────────
 btnAdd.addEventListener('click', addTask);
 
-// También permitimos añadir con la tecla Enter
 taskInput.addEventListener('keypress', function(e) {
   if (e.key === 'Enter') addTask();
 });
 
 function addTask() {
-  // Capturamos el texto del input y quitamos espacios sobrantes
   const text = taskInput.value.trim();
-
-  // Si el input está vacío, no hacemos nada
   if (!text) return;
 
-  // Creamos un objeto para la nueva tarea
   const newTask = {
-    id:   Date.now(),   // usamos la fecha como ID único
+    id:   Date.now(),
     text: text,
     done: false
   };
 
-  // La añadimos al array de tareas
   tasks.push(newTask);
-
-  // Guardamos en LocalStorage
   saveTasks();
-
-  // Actualizamos la pantalla
   renderTasks();
-
-  // Limpiamos el input
   taskInput.value = '';
   taskInput.focus();
 }
 
 // ─────────────────────────────────────────
 // BORRAR TAREA
-// Esta función recibe el ID de la tarea
-// y la elimina del array.
 // ─────────────────────────────────────────
 function deleteTask(id) {
-  // Filtramos el array quitando la tarea con ese ID
   tasks = tasks.filter(task => task.id !== id);
-
-  // Guardamos y actualizamos
   saveTasks();
   renderTasks();
 }
 
 // ─────────────────────────────────────────
 // MARCAR COMO COMPLETADA
-// Al hacer clic en la tarjeta, cambia
-// entre hecha y pendiente.
 // ─────────────────────────────────────────
 function toggleTask(id) {
   tasks = tasks.map(task => {
-    if (task.id === id) {
-      return { ...task, done: !task.done };
-    }
+    if (task.id === id) return { ...task, done: !task.done };
     return task;
   });
-
   saveTasks();
   renderTasks();
 }
 
 // ─────────────────────────────────────────
 // GUARDAR EN LOCALSTORAGE
-// Convertimos el array a texto con
-// JSON.stringify y lo guardamos.
 // ─────────────────────────────────────────
 function saveTasks() {
   localStorage.setItem('taskflow-tasks', JSON.stringify(tasks));
@@ -101,66 +92,72 @@ function saveTasks() {
 
 // ─────────────────────────────────────────
 // PINTAR LAS TAREAS EN PANTALLA
-// Recorremos el array y creamos un elemento
-// HTML por cada tarea.
+// Las tarjetas ahora usan clases de Tailwind
+// en lugar de CSS personalizado.
 // ─────────────────────────────────────────
 function renderTasks() {
-  // Vaciamos la lista antes de volver a pintarla
   taskList.innerHTML = '';
 
   if (tasks.length === 0) {
-    taskList.innerHTML = '<p style="color: var(--color-muted); font-size: 0.9rem; padding: 1rem 0;">No hay tareas todavía. ¡Añade una! 👆</p>';
+    taskList.innerHTML = '<p class="text-neutral-400 text-sm py-4">No hay tareas todavía. ¡Añade una! 👆</p>';
     return;
   }
 
   tasks.forEach(task => {
-    // Creamos el div de la tarjeta
     const card = document.createElement('div');
-    card.className = 'task-card' + (task.done ? ' done' : '');
-    card.dataset.id = task.id;
+
+    // Clases Tailwind para la tarjeta
+    card.className = [
+      'flex items-center gap-3',
+      'bg-neutral-100 dark:bg-neutral-900',
+      'border border-neutral-200 dark:border-neutral-800',
+      'rounded-xl px-4 py-3 mb-2 cursor-pointer',
+      'hover:bg-neutral-200 dark:hover:bg-neutral-800',
+      'hover:translate-x-1',
+      'transition-all duration-200',
+      task.done ? 'opacity-50' : ''
+    ].join(' ');
 
     card.innerHTML = `
-      <div class="task-check"></div>
-      <span class="task-title">${task.text}</span>
-      <button class="btn-delete" title="Eliminar tarea">✕</button>
+      <div class="w-4 h-4 rounded-full border-2 flex-shrink-0 transition-all duration-300
+        ${task.done
+          ? 'bg-accent border-accent'
+          : 'border-neutral-300 dark:border-neutral-600'
+        }">
+      </div>
+      <span class="flex-1 text-sm ${task.done ? 'line-through text-neutral-400' : ''}">${task.text}</span>
+      <button
+        class="text-neutral-400 hover:text-danger hover:bg-danger/10 text-sm px-2 py-1 rounded-lg flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-danger/30 transition-all duration-200"
+        title="Eliminar tarea"
+      >✕</button>
     `;
 
-    // Al hacer clic en la tarjeta la marcamos como hecha
     card.addEventListener('click', function(e) {
-      // Evitamos que el clic en el botón de borrar también marque la tarea
-      if (e.target.classList.contains('btn-delete')) return;
+      if (e.target.tagName === 'BUTTON') return;
       toggleTask(task.id);
     });
 
-    // Al hacer clic en el botón de borrar, eliminamos la tarea
-    card.querySelector('.btn-delete').addEventListener('click', function() {
+    card.querySelector('button').addEventListener('click', function() {
       deleteTask(task.id);
     });
 
     taskList.appendChild(card);
   });
 
-  // Aplicamos el filtro de búsqueda si hay algo escrito
   filterTasks();
 }
 
 // ─────────────────────────────────────────
 // FILTRO DE BÚSQUEDA (Bonus)
-// Oculta las tarjetas que no coincidan
-// con el texto del buscador.
 // ─────────────────────────────────────────
 searchInput.addEventListener('input', filterTasks);
 
 function filterTasks() {
   const query = searchInput.value.toLowerCase();
-  const cards = taskList.querySelectorAll('.task-card');
+  const cards = taskList.querySelectorAll('[class*="flex items-center"]');
 
   cards.forEach(card => {
-    const title = card.querySelector('.task-title').textContent.toLowerCase();
-    if (title.includes(query)) {
-      card.classList.remove('hidden');
-    } else {
-      card.classList.add('hidden');
-    }
+    const title = card.querySelector('span').textContent.toLowerCase();
+    card.style.display = title.includes(query) ? '' : 'none';
   });
 }

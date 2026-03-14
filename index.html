@@ -1,346 +1,119 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>TaskFlow</title>
+
+  <!-- Tailwind CSS via CDN con configuración personalizada -->
+  <script>
+    // ─────────────────────────────────────────
+    // tailwind.config
+    // Aquí configuramos Tailwind: activamos el
+    // modo oscuro por clase (darkMode: 'class')
+    // y definimos colores personalizados.
+    // ─────────────────────────────────────────
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            accent: '#c8f135',
+            danger: '#ff6b35',
+          },
+          fontFamily: {
+            display: ['Syne', 'sans-serif'],
+            body:    ['DM Sans', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <style>
-    :root {
-      --color-bg:       #0f0f0f;
-      --color-surface:  #1a1a1a;
-      --color-border:   #2a2a2a;
-      --color-accent:   #c8f135;
-      --color-accent2:  #ff6b35;
-      --color-text:     #f0f0f0;
-      --color-muted:    #888;
-
-      --font-display: 'Syne', sans-serif;
-      --font-body:    'DM Sans', sans-serif;
-
-      --space-xs: 0.5rem;
-      --space-sm: 1rem;
-      --space-md: 1.5rem;
-      --space-lg: 2.5rem;
-
-      --radius: 12px;
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      background: var(--color-bg);
-      color: var(--color-text);
-      font-family: var(--font-body);
-      min-height: 100vh;
-    }
-
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: var(--space-sm) var(--space-lg);
-      border-bottom: 1px solid var(--color-border);
-      background: var(--color-surface);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    header .logo {
-      font-family: var(--font-display);
-      font-size: 1.5rem;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-    }
-
-    header .logo span { color: var(--color-accent); }
-
-    header nav { display: flex; gap: var(--space-sm); }
-
-    header nav a {
-      color: var(--color-muted);
-      text-decoration: none;
-      font-size: 0.9rem;
-      transition: color 0.2s;
-    }
-
-    header nav a:hover { color: var(--color-text); }
-
-    .layout {
-      display: grid;
-      grid-template-columns: 240px 1fr;
-      min-height: calc(100vh - 61px);
-    }
-
-    aside {
-      background: var(--color-surface);
-      border-right: 1px solid var(--color-border);
-      padding: var(--space-md);
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-xs);
-    }
-
-    aside h2 {
-      font-family: var(--font-display);
-      font-size: 0.7rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--color-muted);
-      margin-bottom: var(--space-xs);
-    }
-
-    .nav-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0.6rem var(--space-sm);
-      border-radius: var(--radius);
-      cursor: pointer;
-      font-size: 0.9rem;
-      color: var(--color-muted);
-      transition: background 0.2s, color 0.2s;
-    }
-
-    .nav-item:hover { background: var(--color-border); color: var(--color-text); }
-
-    .nav-item.active { background: var(--color-accent); color: #000; font-weight: 500; }
-
-    .nav-item .count {
-      font-size: 0.75rem;
-      background: rgba(255,255,255,0.1);
-      padding: 0.1rem 0.4rem;
-      border-radius: 99px;
-    }
-
-    .nav-item.active .count { background: rgba(0,0,0,0.15); }
-
-    main { padding: var(--space-lg); overflow-y: auto; }
-
-    main h1 {
-      font-family: var(--font-display);
-      font-size: 2rem;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      margin-bottom: var(--space-md);
-    }
-
-    main h1 span { color: var(--color-accent); }
-
-    /* ─────────────────────────────────────────
-       FORMULARIO para añadir tareas
-       El usuario escribe aquí su nueva tarea.
-    ───────────────────────────────────────── */
-    .add-task-form {
-      display: flex;
-      gap: var(--space-xs);
-      margin-bottom: var(--space-lg);
-    }
-
-    .add-task-form input {
-      flex: 1;
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius);
-      padding: 0.75rem var(--space-sm);
-      color: var(--color-text);
-      font-family: var(--font-body);
-      font-size: 0.95rem;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    .add-task-form input:focus { border-color: var(--color-accent); }
-
-    .add-task-form input::placeholder { color: var(--color-muted); }
-
-    .add-task-form button {
-      background: var(--color-accent);
-      color: #000;
-      border: none;
-      border-radius: var(--radius);
-      padding: 0.75rem var(--space-md);
-      font-family: var(--font-display);
-      font-weight: 700;
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: opacity 0.2s;
-    }
-
-    .add-task-form button:hover { opacity: 0.85; }
-
-    /* ─────────────────────────────────────────
-       BUSCADOR (Bonus)
-    ───────────────────────────────────────── */
-    .search-bar {
-      display: flex;
-      align-items: center;
-      gap: var(--space-xs);
-      margin-bottom: var(--space-md);
-    }
-
-    .search-bar input {
-      flex: 1;
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius);
-      padding: 0.6rem var(--space-sm);
-      color: var(--color-text);
-      font-family: var(--font-body);
-      font-size: 0.9rem;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    .search-bar input:focus { border-color: var(--color-muted); }
-    .search-bar input::placeholder { color: var(--color-muted); }
-
-    .search-bar span {
-      color: var(--color-muted);
-      font-size: 1.1rem;
-    }
-
-    section { margin-bottom: var(--space-lg); }
-
-    section h2 {
-      font-family: var(--font-display);
-      font-size: 0.75rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--color-muted);
-      margin-bottom: var(--space-sm);
-      padding-bottom: var(--space-xs);
-      border-bottom: 1px solid var(--color-border);
-    }
-
-    /* ─────────────────────────────────────────
-       TARJETAS DE TAREAS
-    ───────────────────────────────────────── */
-    .task-card {
-      display: flex;
-      align-items: center;
-      gap: var(--space-sm);
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius);
-      padding: var(--space-sm) var(--space-md);
-      margin-bottom: var(--space-xs);
-      cursor: pointer;
-      transition: background 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
-    }
-
-    .task-card:hover { background: #222; border-color: #444; transform: translateX(4px); }
-
-    .task-card.done { opacity: 0.5; }
-    .task-card.done .task-title { text-decoration: line-through; }
-
-    /* Tareas ocultas por el buscador */
-    .task-card.hidden { display: none; }
-
-    .task-check {
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      border: 2px solid var(--color-border);
-      flex-shrink: 0;
-      transition: background 0.3s, border-color 0.3s;
-    }
-
-    .task-card.done .task-check { background: var(--color-accent); border-color: var(--color-accent); }
-
-    .task-title { flex: 1; font-size: 0.95rem; }
-
-    /* ─────────────────────────────────────────
-       BOTÓN DE ELIMINAR
-       Aparece en cada tarea para borrarla.
-    ───────────────────────────────────────── */
-    .btn-delete {
-      background: transparent;
-      border: none;
-      color: var(--color-muted);
-      font-size: 1rem;
-      cursor: pointer;
-      padding: 0.2rem 0.4rem;
-      border-radius: 6px;
-      transition: color 0.2s, background 0.2s;
-      flex-shrink: 0;
-    }
-
-    .btn-delete:hover { color: var(--color-accent2); background: #ff6b3520; }
-
-    @media (max-width: 768px) {
-      .layout {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto 1fr;
-      }
-
-      aside {
-        border-right: none;
-        border-bottom: 1px solid var(--color-border);
-        flex-direction: row;
-        flex-wrap: wrap;
-        padding: var(--space-sm);
-      }
-
-      aside h2 { width: 100%; }
-
-      main { padding: var(--space-sm); }
-
-      main h1 { font-size: 1.5rem; }
-
-      .add-task-form input { font-size: 0.85rem; }
-    }
-  </style>
 </head>
-<body>
 
-  <header>
-    <div class="logo">Task<span>Flow</span></div>
-    <nav>
-      <a href="#">Dashboard</a>
-      <a href="#">Equipo</a>
-      <a href="#">Ajustes</a>
+<!--
+  La clase "dark" en <html> activa el modo oscuro.
+  JavaScript la añade o quita según el botón.
+  En modo oscuro, las clases "dark:..." se activan.
+-->
+<body class="bg-white dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 font-body min-h-screen transition-colors duration-300">
+
+  <!-- HEADER -->
+  <header class="flex items-center justify-between px-10 py-4 bg-neutral-100 dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 sticky top-0 z-50">
+    <div class="font-display text-2xl font-extrabold tracking-tight">
+      Task<span class="text-accent">Flow</span>
+    </div>
+    <nav class="flex items-center gap-6">
+      <a href="#" class="text-neutral-500 dark:text-neutral-400 text-sm hover:text-neutral-900 dark:hover:text-white transition-colors duration-200 focus:outline-none focus:underline">Dashboard</a>
+      <a href="#" class="text-neutral-500 dark:text-neutral-400 text-sm hover:text-neutral-900 dark:hover:text-white transition-colors duration-200 focus:outline-none focus:underline">Equipo</a>
+      <a href="#" class="text-neutral-500 dark:text-neutral-400 text-sm hover:text-neutral-900 dark:hover:text-white transition-colors duration-200 focus:outline-none focus:underline">Ajustes</a>
+
+      <!-- Botón para alternar modo oscuro/claro -->
+      <button
+        id="theme-toggle"
+        class="ml-2 px-3 py-1.5 rounded-lg bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 text-sm font-medium hover:bg-neutral-300 dark:hover:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-accent transition-all duration-200"
+      >
+        <span id="theme-icon">☀️</span>
+      </button>
     </nav>
   </header>
 
-  <div class="layout">
+  <!-- LAYOUT: en móvil una columna, en escritorio aside + main -->
+  <div class="grid grid-cols-1 md:grid-cols-[240px_1fr] min-h-[calc(100vh-61px)]">
 
-    <aside>
-      <h2>Categorías</h2>
-      <div class="nav-item active">📋 Todas</div>
-      <div class="nav-item">💻 Desarrollo</div>
-      <div class="nav-item">🎨 Diseño</div>
-      <div class="nav-item">📊 Análisis</div>
-      <div class="nav-item">📝 Documentación</div>
+    <!-- ASIDE -->
+    <aside class="bg-neutral-100 dark:bg-neutral-900 border-b md:border-b-0 md:border-r border-neutral-200 dark:border-neutral-800 p-6 flex flex-row flex-wrap md:flex-col gap-1">
+      <h2 class="font-display text-xs tracking-widest uppercase text-neutral-400 mb-1 w-full">Categorías</h2>
+      <div class="flex items-center justify-between px-4 py-2 rounded-xl bg-accent text-black font-medium text-sm cursor-pointer">📋 Todas</div>
+      <div class="flex items-center justify-between px-4 py-2 rounded-xl text-neutral-500 dark:text-neutral-400 text-sm cursor-pointer hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors duration-200">💻 Desarrollo</div>
+      <div class="flex items-center justify-between px-4 py-2 rounded-xl text-neutral-500 dark:text-neutral-400 text-sm cursor-pointer hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors duration-200">🎨 Diseño</div>
+      <div class="flex items-center justify-between px-4 py-2 rounded-xl text-neutral-500 dark:text-neutral-400 text-sm cursor-pointer hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors duration-200">📊 Análisis</div>
+      <div class="flex items-center justify-between px-4 py-2 rounded-xl text-neutral-500 dark:text-neutral-400 text-sm cursor-pointer hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors duration-200">📝 Documentación</div>
     </aside>
 
-    <main>
-      <h1>Mis <span>Tareas</span></h1>
+    <!-- MAIN -->
+    <main class="p-6 md:p-10 overflow-y-auto">
+      <h1 class="font-display text-3xl md:text-4xl font-extrabold tracking-tight mb-6">
+        Mis <span class="text-accent">Tareas</span>
+      </h1>
 
       <!-- Formulario para añadir tareas -->
-      <div class="add-task-form">
-        <input type="text" id="task-input" placeholder="Escribe una nueva tarea..." />
-        <button id="btn-add">+ Añadir</button>
+      <div class="flex gap-2 mb-6">
+        <input
+          type="text"
+          id="task-input"
+          placeholder="Escribe una nueva tarea..."
+          class="flex-1 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-3 text-sm text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 outline-none focus:border-accent focus:ring-2 focus:ring-accent/30 transition-all duration-200"
+        />
+        <button
+          id="btn-add"
+          class="bg-accent text-black font-display font-bold text-sm px-5 py-3 rounded-xl hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-accent/50 active:scale-95 transition-all duration-200"
+        >
+          + Añadir
+        </button>
       </div>
 
       <!-- Buscador (Bonus) -->
-      <div class="search-bar">
-        <span>🔍</span>
-        <input type="text" id="search-input" placeholder="Buscar tareas..." />
+      <div class="flex items-center gap-2 mb-8 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 focus-within:border-neutral-400 dark:focus-within:border-neutral-600 transition-all duration-200">
+        <span class="text-neutral-400">🔍</span>
+        <input
+          type="text"
+          id="search-input"
+          placeholder="Buscar tareas..."
+          class="flex-1 bg-transparent text-sm text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 outline-none"
+        />
       </div>
 
       <!-- Lista de tareas (se rellena con JavaScript) -->
       <section>
-        <h2>📋 Tareas</h2>
+        <h2 class="font-display text-xs tracking-widest uppercase text-neutral-400 mb-3 pb-2 border-b border-neutral-200 dark:border-neutral-800">📋 Tareas</h2>
         <div id="task-list"></div>
       </section>
-
     </main>
   </div>
 
-  <!-- Vinculamos el archivo JavaScript -->
   <script src="app.js"></script>
-
 </body>
 </html>
