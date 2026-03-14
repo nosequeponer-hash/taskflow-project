@@ -5,13 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>TaskFlow</title>
 
-  <!-- tailwind.config DEBE ir antes del script de Tailwind -->
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+
+  <!-- 1. Primero cargamos Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- 2. Después configuramos Tailwind -->
   <script>
     // ─────────────────────────────────────────
     // tailwind.config
-    // darkMode: 'class' significa que el modo
-    // oscuro se activa añadiendo la clase "dark"
-    // al elemento <html>.
+    // darkMode: 'class' activa el modo oscuro
+    // cuando el elemento <html> tiene la clase "dark"
     // ─────────────────────────────────────────
     tailwind.config = {
       darkMode: 'class',
@@ -29,15 +33,13 @@
       }
     }
   </script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 </head>
 
-<body class="bg-white dark:bg-[#0f0f0f] text-neutral-900 dark:text-neutral-100 font-body min-h-screen transition-colors duration-300">
+<body class="bg-white dark:bg-[#0f0f0f] text-neutral-900 dark:text-neutral-100 min-h-screen transition-colors duration-300" style="font-family: 'DM Sans', sans-serif;">
 
   <!-- HEADER -->
   <header class="flex items-center justify-between px-10 py-4 bg-neutral-100 dark:bg-[#1a1a1a] border-b border-neutral-200 dark:border-[#2a2a2a] sticky top-0 z-50">
-    <div class="font-display text-2xl font-extrabold tracking-tight">
+    <div class="text-2xl font-extrabold tracking-tight" style="font-family: 'Syne', sans-serif;">
       Task<span class="text-accent">Flow</span>
     </div>
     <nav class="flex items-center gap-6">
@@ -60,7 +62,7 @@
 
     <!-- ASIDE -->
     <aside class="bg-neutral-100 dark:bg-[#1a1a1a] border-b md:border-b-0 md:border-r border-neutral-200 dark:border-[#2a2a2a] p-6 flex flex-row flex-wrap md:flex-col gap-1">
-      <h2 class="font-display text-[0.7rem] tracking-widest uppercase text-neutral-400 mb-1 w-full">Categorías</h2>
+      <h2 class="text-[0.7rem] tracking-widest uppercase text-neutral-400 mb-1 w-full" style="font-family: 'Syne', sans-serif;">Categorías</h2>
       <div class="flex items-center px-4 py-2 rounded-xl bg-accent text-black font-medium text-sm cursor-pointer">📋 Todas</div>
       <div class="flex items-center px-4 py-2 rounded-xl text-neutral-500 dark:text-neutral-400 text-sm cursor-pointer hover:bg-neutral-200 dark:hover:bg-[#2a2a2a] transition-colors duration-200">💻 Desarrollo</div>
       <div class="flex items-center px-4 py-2 rounded-xl text-neutral-500 dark:text-neutral-400 text-sm cursor-pointer hover:bg-neutral-200 dark:hover:bg-[#2a2a2a] transition-colors duration-200">🎨 Diseño</div>
@@ -70,7 +72,7 @@
 
     <!-- MAIN -->
     <main class="p-6 md:p-10 overflow-y-auto">
-      <h1 class="font-display text-3xl md:text-4xl font-extrabold tracking-tight mb-6">
+      <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-6" style="font-family: 'Syne', sans-serif;">
         Mis <span class="text-accent">Tareas</span>
       </h1>
 
@@ -84,7 +86,8 @@
         />
         <button
           id="btn-add"
-          class="bg-accent text-black font-display font-bold text-sm px-5 py-3 rounded-xl hover:opacity-80 focus:outline-none active:scale-95 transition-all duration-200"
+          class="bg-accent text-black font-bold text-sm px-5 py-3 rounded-xl hover:opacity-80 active:scale-95 transition-all duration-200"
+          style="font-family: 'Syne', sans-serif;"
         >
           + Añadir
         </button>
@@ -103,7 +106,7 @@
 
       <!-- Lista de tareas -->
       <section>
-        <h2 class="font-display text-[0.75rem] tracking-widest uppercase text-neutral-400 mb-3 pb-2 border-b border-neutral-200 dark:border-[#2a2a2a]">📋 Tareas</h2>
+        <h2 class="text-[0.75rem] tracking-widest uppercase text-neutral-400 mb-3 pb-2 border-b border-neutral-200 dark:border-[#2a2a2a]" style="font-family: 'Syne', sans-serif;">📋 Tareas</h2>
         <div id="task-list"></div>
       </section>
     </main>
