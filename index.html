@@ -7,16 +7,9 @@
 
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 
-  <!-- 1. Primero cargamos Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- 2. Después configuramos Tailwind -->
   <script>
-    // ─────────────────────────────────────────
-    // tailwind.config
-    // darkMode: 'class' activa el modo oscuro
-    // cuando el elemento <html> tiene la clase "dark"
-    // ─────────────────────────────────────────
     tailwind.config = {
       darkMode: 'class',
       theme: {
@@ -46,8 +39,6 @@
       <a href="#" class="text-neutral-500 dark:text-neutral-400 text-sm hover:text-neutral-900 dark:hover:text-white transition-colors duration-200">Dashboard</a>
       <a href="#" class="text-neutral-500 dark:text-neutral-400 text-sm hover:text-neutral-900 dark:hover:text-white transition-colors duration-200">Equipo</a>
       <a href="#" class="text-neutral-500 dark:text-neutral-400 text-sm hover:text-neutral-900 dark:hover:text-white transition-colors duration-200">Ajustes</a>
-
-      <!-- Botón modo oscuro/claro -->
       <button
         id="theme-toggle"
         class="ml-2 px-3 py-1.5 rounded-lg bg-neutral-200 dark:bg-[#2a2a2a] text-neutral-700 dark:text-neutral-300 text-sm font-medium hover:bg-neutral-300 dark:hover:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-accent transition-all duration-200"
@@ -57,17 +48,18 @@
     </nav>
   </header>
 
-  <!-- LAYOUT -->
   <div class="grid grid-cols-1 md:grid-cols-[240px_1fr] min-h-[calc(100vh-61px)]">
 
-    <!-- ASIDE -->
+    <!-- ASIDE: categorías filtrables -->
     <aside class="bg-neutral-100 dark:bg-[#1a1a1a] border-b md:border-b-0 md:border-r border-neutral-200 dark:border-[#2a2a2a] p-6 flex flex-row flex-wrap md:flex-col gap-1">
       <h2 class="text-[0.7rem] tracking-widest uppercase text-neutral-400 mb-1 w-full" style="font-family: 'Syne', sans-serif;">Categorías</h2>
-      <div class="flex items-center px-4 py-2 rounded-xl bg-accent text-black font-medium text-sm cursor-pointer">📋 Todas</div>
-      <div class="flex items-center px-4 py-2 rounded-xl text-neutral-500 dark:text-neutral-400 text-sm cursor-pointer hover:bg-neutral-200 dark:hover:bg-[#2a2a2a] transition-colors duration-200">💻 Desarrollo</div>
-      <div class="flex items-center px-4 py-2 rounded-xl text-neutral-500 dark:text-neutral-400 text-sm cursor-pointer hover:bg-neutral-200 dark:hover:bg-[#2a2a2a] transition-colors duration-200">🎨 Diseño</div>
-      <div class="flex items-center px-4 py-2 rounded-xl text-neutral-500 dark:text-neutral-400 text-sm cursor-pointer hover:bg-neutral-200 dark:hover:bg-[#2a2a2a] transition-colors duration-200">📊 Análisis</div>
-      <div class="flex items-center px-4 py-2 rounded-xl text-neutral-500 dark:text-neutral-400 text-sm cursor-pointer hover:bg-neutral-200 dark:hover:bg-[#2a2a2a] transition-colors duration-200">📝 Documentación</div>
+
+      <!-- Cada botón tiene un data-category para identificarlo -->
+      <button data-category="todas"         class="nav-btn active-cat flex items-center justify-between px-4 py-2 rounded-xl text-sm cursor-pointer w-full text-left transition-colors duration-200">📋 Todas <span class="cat-count text-xs px-2 py-0.5 rounded-full bg-black/10 dark:bg-white/10"></span></button>
+      <button data-category="Desarrollo"    class="nav-btn flex items-center justify-between px-4 py-2 rounded-xl text-neutral-500 dark:text-neutral-400 text-sm cursor-pointer w-full text-left hover:bg-neutral-200 dark:hover:bg-[#2a2a2a] transition-colors duration-200">💻 Desarrollo <span class="cat-count text-xs px-2 py-0.5 rounded-full bg-black/10 dark:bg-white/10"></span></button>
+      <button data-category="Diseño"        class="nav-btn flex items-center justify-between px-4 py-2 rounded-xl text-neutral-500 dark:text-neutral-400 text-sm cursor-pointer w-full text-left hover:bg-neutral-200 dark:hover:bg-[#2a2a2a] transition-colors duration-200">🎨 Diseño <span class="cat-count text-xs px-2 py-0.5 rounded-full bg-black/10 dark:bg-white/10"></span></button>
+      <button data-category="Análisis"      class="nav-btn flex items-center justify-between px-4 py-2 rounded-xl text-neutral-500 dark:text-neutral-400 text-sm cursor-pointer w-full text-left hover:bg-neutral-200 dark:hover:bg-[#2a2a2a] transition-colors duration-200">📊 Análisis <span class="cat-count text-xs px-2 py-0.5 rounded-full bg-black/10 dark:bg-white/10"></span></button>
+      <button data-category="Documentación" class="nav-btn flex items-center justify-between px-4 py-2 rounded-xl text-neutral-500 dark:text-neutral-400 text-sm cursor-pointer w-full text-left hover:bg-neutral-200 dark:hover:bg-[#2a2a2a] transition-colors duration-200">📝 Documentación <span class="cat-count text-xs px-2 py-0.5 rounded-full bg-black/10 dark:bg-white/10"></span></button>
     </aside>
 
     <!-- MAIN -->
@@ -76,7 +68,7 @@
         Mis <span class="text-accent">Tareas</span>
       </h1>
 
-      <!-- Formulario para añadir tareas -->
+      <!-- Formulario: ahora incluye selector de categoría -->
       <div class="flex gap-2 mb-6">
         <input
           type="text"
@@ -84,6 +76,16 @@
           placeholder="Escribe una nueva tarea..."
           class="flex-1 bg-neutral-100 dark:bg-[#1a1a1a] border border-neutral-200 dark:border-[#2a2a2a] rounded-xl px-4 py-3 text-sm text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 outline-none focus:border-accent transition-all duration-200"
         />
+        <!-- Selector de categoría -->
+        <select
+          id="category-select"
+          class="bg-neutral-100 dark:bg-[#1a1a1a] border border-neutral-200 dark:border-[#2a2a2a] rounded-xl px-3 py-3 text-sm text-neutral-900 dark:text-neutral-100 outline-none focus:border-accent transition-all duration-200 cursor-pointer"
+        >
+          <option value="Desarrollo">💻 Desarrollo</option>
+          <option value="Diseño">🎨 Diseño</option>
+          <option value="Análisis">📊 Análisis</option>
+          <option value="Documentación">📝 Documentación</option>
+        </select>
         <button
           id="btn-add"
           class="bg-accent text-black font-bold text-sm px-5 py-3 rounded-xl hover:opacity-80 active:scale-95 transition-all duration-200"
@@ -93,7 +95,7 @@
         </button>
       </div>
 
-      <!-- Buscador (Bonus) -->
+      <!-- Buscador -->
       <div class="flex items-center gap-2 mb-8 bg-neutral-100 dark:bg-[#1a1a1a] border border-neutral-200 dark:border-[#2a2a2a] rounded-xl px-4 py-2.5 transition-all duration-200">
         <span class="text-neutral-400">🔍</span>
         <input
@@ -106,7 +108,7 @@
 
       <!-- Lista de tareas -->
       <section>
-        <h2 class="text-[0.75rem] tracking-widest uppercase text-neutral-400 mb-3 pb-2 border-b border-neutral-200 dark:border-[#2a2a2a]" style="font-family: 'Syne', sans-serif;">📋 Tareas</h2>
+        <h2 id="section-title" class="text-[0.75rem] tracking-widest uppercase text-neutral-400 mb-3 pb-2 border-b border-neutral-200 dark:border-[#2a2a2a]" style="font-family: 'Syne', sans-serif;">📋 Todas las tareas</h2>
         <div id="task-list"></div>
       </section>
     </main>
