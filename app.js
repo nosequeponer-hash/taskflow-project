@@ -2,17 +2,18 @@
 // app.js - Lógica de TaskFlow
 // ─────────────────────────────────────────
 
-const taskInput      = document.getElementById('task-input');
-const btnAdd         = document.getElementById('btn-add');
-const taskList       = document.getElementById('task-list');
-const searchInput    = document.getElementById('search-input');
-const themeToggle    = document.getElementById('theme-toggle');
-const themeIcon      = document.getElementById('theme-icon');
-const categorySelect = document.getElementById('category-select');
-const sectionTitle   = document.getElementById('section-title');
-const navBtns        = document.querySelectorAll('.nav-btn');
+const taskInput          = document.getElementById('task-input');
+const btnAdd             = document.getElementById('btn-add');
+const taskList           = document.getElementById('task-list');
+const searchInput        = document.getElementById('search-input');
+const themeToggle        = document.getElementById('theme-toggle');
+const themeIcon          = document.getElementById('theme-icon');
+const categorySelect     = document.getElementById('category-select');
+const sectionTitle       = document.getElementById('section-title');
+const navBtns            = document.querySelectorAll('.nav-btn');
+const btnCompleteAll     = document.getElementById('btn-complete-all');
+const btnDeleteCompleted = document.getElementById('btn-delete-completed');
 
-// Categoría activa por defecto: todas
 let activeCategory = 'todas';
 
 // ─────────────────────────────────────────
@@ -33,31 +34,57 @@ updateCounts();
 
 // ─────────────────────────────────────────
 // FILTRO POR CATEGORÍA
-// Al hacer clic en un botón del aside,
-// guardamos la categoría activa y
-// volvemos a pintar las tareas filtradas.
 // ─────────────────────────────────────────
 navBtns.forEach(btn => {
   btn.addEventListener('click', function () {
-    // Quitamos el estilo activo a todos
     navBtns.forEach(b => {
-      b.classList.remove('active-cat', 'bg-accent', 'text-black', 'font-medium');
+      b.classList.remove('bg-accent', 'text-black', 'font-medium');
       b.classList.add('text-neutral-500', 'dark:text-neutral-400');
     });
 
-    // Añadimos el estilo activo al pulsado
-    this.classList.add('active-cat', 'bg-accent', 'text-black', 'font-medium');
+    this.classList.add('bg-accent', 'text-black', 'font-medium');
     this.classList.remove('text-neutral-500', 'dark:text-neutral-400');
 
-    // Guardamos la categoría activa
     activeCategory = this.dataset.category;
-
-    // Actualizamos el título de la sección
-    const label = this.textContent.replace(/\d+/g, '').trim();
+    const label = this.querySelector('span').textContent.trim();
     sectionTitle.textContent = activeCategory === 'todas' ? '📋 Todas las tareas' : label;
 
     renderTasks();
   });
+});
+
+// ─────────────────────────────────────────
+// COMPLETAR TODAS LAS TAREAS
+// Marca como done todas las tareas visibles
+// según la categoría activa.
+// ─────────────────────────────────────────
+btnCompleteAll.addEventListener('click', function () {
+  tasks = tasks.map(t => {
+    if (activeCategory === 'todas' || t.category === activeCategory) {
+      return { ...t, done: true };
+    }
+    return t;
+  });
+  saveTasks();
+  renderTasks();
+  updateCounts();
+});
+
+// ─────────────────────────────────────────
+// BORRAR TAREAS COMPLETADAS
+// Elimina solo las tareas que están marcadas
+// como done en la categoría activa.
+// ─────────────────────────────────────────
+btnDeleteCompleted.addEventListener('click', function () {
+  tasks = tasks.filter(t => {
+    if (activeCategory === 'todas' || t.category === activeCategory) {
+      return !t.done;
+    }
+    return true;
+  });
+  saveTasks();
+  renderTasks();
+  updateCounts();
 });
 
 // ─────────────────────────────────────────
@@ -72,7 +99,6 @@ function addTask() {
   const text = taskInput.value.trim();
   if (!text) return;
 
-  // Guardamos también la categoría seleccionada
   tasks.push({
     id:       Date.now(),
     text:     text,
@@ -115,7 +141,6 @@ function saveTasks() {
 
 // ─────────────────────────────────────────
 // ACTUALIZAR CONTADORES del aside
-// Muestra cuántas tareas hay en cada categoría
 // ─────────────────────────────────────────
 function updateCounts() {
   navBtns.forEach(btn => {
@@ -131,12 +156,10 @@ function updateCounts() {
 
 // ─────────────────────────────────────────
 // PINTAR LAS TAREAS EN PANTALLA
-// Filtra por categoría activa antes de pintar
 // ─────────────────────────────────────────
 function renderTasks() {
   taskList.innerHTML = '';
 
-  // Filtramos según la categoría activa
   const filtered = activeCategory === 'todas'
     ? tasks
     : tasks.filter(t => t.category === activeCategory);
@@ -153,7 +176,7 @@ function renderTasks() {
     card.innerHTML = `
       <div class="w-4 h-4 rounded-full border-2 flex-shrink-0 transition-all duration-300 ${task.done ? 'bg-accent border-accent' : 'border-neutral-300 dark:border-neutral-600'}"></div>
       <span class="flex-1 text-sm ${task.done ? 'line-through text-neutral-400' : ''}">${task.text}</span>
-      <span class="text-xs text-neutral-400 bg-neutral-200 dark:bg-[#2a2a2a] px-2 py-0.5 rounded-full">${task.category}</span>
+      <span class="text-xs text-neutral-400 bg-neutral-200 dark:bg-[#2a2a2a] px-2 py-0.5 rounded-full hidden md:block">${task.category}</span>
       <button class="delete-btn text-neutral-400 hover:text-danger text-sm px-2 py-1 rounded-lg flex-shrink-0 transition-all duration-200">✕</button>
     `;
 
@@ -173,7 +196,7 @@ function renderTasks() {
 }
 
 // ─────────────────────────────────────────
-// FILTRO DE BÚSQUEDA (Bonus)
+// FILTRO DE BÚSQUEDA
 // ─────────────────────────────────────────
 searchInput.addEventListener('input', filterTasks);
 
@@ -185,5 +208,5 @@ function filterTasks() {
   });
 }
 
-// Aplicamos estilos iniciales al botón "Todas" que está activo por defecto
+// Estilo inicial del botón "Todas"
 document.querySelector('[data-category="todas"]').classList.add('bg-accent', 'text-black', 'font-medium');
