@@ -12,6 +12,7 @@ const categorySelect     = document.getElementById('category-select');
 const sectionTitle       = document.getElementById('section-title');
 const navBtns            = document.querySelectorAll('.nav-btn');
 const btnCompleteAll     = document.getElementById('btn-complete-all');
+const btnUncompleteAll   = document.getElementById('btn-uncomplete-all');
 const btnDeleteCompleted = document.getElementById('btn-delete-completed');
 
 let activeCategory = 'todas';
@@ -55,13 +56,28 @@ navBtns.forEach(btn => {
 
 // ─────────────────────────────────────────
 // COMPLETAR TODAS LAS TAREAS
-// Marca como done todas las tareas visibles
-// según la categoría activa.
 // ─────────────────────────────────────────
 btnCompleteAll.addEventListener('click', function () {
   tasks = tasks.map(t => {
     if (activeCategory === 'todas' || t.category === activeCategory) {
       return { ...t, done: true };
+    }
+    return t;
+  });
+  saveTasks();
+  renderTasks();
+  updateCounts();
+});
+
+// ─────────────────────────────────────────
+// DESMARCAR TODAS LAS TAREAS
+// Vuelve a poner como pendientes todas las
+// tareas completadas de la categoría activa.
+// ─────────────────────────────────────────
+btnUncompleteAll.addEventListener('click', function () {
+  tasks = tasks.map(t => {
+    if (activeCategory === 'todas' || t.category === activeCategory) {
+      return { ...t, done: false };
     }
     return t;
   });
